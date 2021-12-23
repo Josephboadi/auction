@@ -1,0 +1,45 @@
+.contactContainer {
+  height: auto;
+  width: auto;
+  /* max-width: 100%; */
+  display: grid;
+  /* flex-direction: row; */
+  /* place-items: center; */
+  /* background-color: white; */
+
+  /* position: relative; */
+}
+
+.mailBtn {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  text-decoration: none;
+  /* border-width: 4 solid; */
+  /* border-color: #d7eae4; */
+  background-color: #d7eae4;
+  border-radius: 20px;
+  transform: translateX(-100vw);
+  cursor: url('https://img.icons8.com/color/48/000000/edit--v2.png'), pointer;
+  animation: mailBtnAnimation 2s forwards;
+}
+
+.mailBtn > button {
+  text-decoration: none;
+  /* border-radius: 20px; */
+  /* background-color: #91c5b5; */
+  font: 150 2vmax 'Roboto';
+  cursor: url('https://img.icons8.com/color/48/000000/edit--v2.png'), pointer;
+  padding: 1vmax;
+}
+
+.mailIcon {
+  color: black;
+}
+
+@keyframes mailBtnAnimation {
+  to {
+    transform: translateX(0);
+  }
+}
