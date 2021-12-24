@@ -8,7 +8,7 @@ exports.createBid = catchAsyncErrors(async (req, res, next) => {
   req.body.user = req.body.user;
 
   await Product.findById(req.body.product).then(async (product) => {
-    if (req.body.bidAmount > product.price) {
+    if (req.body.bidAmount > product.currentBidPrice) {
       const bid = await Bid.create(req.body);
       product.bids.push(bid);
       product.currentBidPrice = req.body.bidAmount;
