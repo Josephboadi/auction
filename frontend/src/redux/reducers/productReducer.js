@@ -34,8 +34,26 @@ import {
   DELETE_REVIEW_SUCCESS,
   DELETE_REVIEW_FAIL,
   DELETE_REVIEW_RESET,
+  NEW_PRODUCT_BID_REQUEST,
+  NEW_PRODUCT_BID_SUCCESS,
+  NEW_PRODUCT_BID_RESET,
+  NEW_PRODUCT_BID_FAIL,
+  ACTIVATE_AUTO_BID_REQUEST,
+  ACTIVATE_AUTO_BID_SUCCESS,
+  ACTIVATE_AUTO_BID_RESET,
+  ACTIVATE_AUTO_BID_FAIL,
+  UPDATE_AUTO_BID_REQUEST,
+  UPDATE_AUTO_BID_SUCCESS,
+  UPDATE_AUTO_BID_RESET,
+  UPDATE_AUTO_BID_FAIL,
+  ALL_BID_REQUEST,
+  ALL_BID_SUCCESS,
+  ALL_BID_FAIL,
+  AUTO_BID_REQUEST,
+  AUTO_BID_SUCCESS,
+  AUTO_BID_FAIL,
   CLEAR_ERRORS,
-} from '../constants/productConstants';
+} from "../constants/productConstants";
 
 export const allProductsReducer = (state = { allProducts: [] }, action) => {
   switch (action.type) {
@@ -52,6 +70,42 @@ export const allProductsReducer = (state = { allProducts: [] }, action) => {
         // productsCount: action.payload.productsCount,
         // resultPerPage: action.payload.resultPerPage,
         // filteredProductsCount: action.payload.filteredProductsCount,
+      };
+
+    case ADMIN_PRODUCT_SUCCESS:
+      return {
+        loading: false,
+        allProducts: action.payload,
+      };
+    case ALL_RAW_PRODUCT_FAIL:
+    case ADMIN_PRODUCT_FAIL:
+      return {
+        loading: false,
+        error: action.payload,
+      };
+
+    case CLEAR_ERRORS:
+      return {
+        ...state,
+        error: null,
+      };
+    default:
+      return state;
+  }
+};
+
+export const allBidsReducer = (state = { allProducts: [] }, action) => {
+  switch (action.type) {
+    case ALL_RAW_PRODUCT_REQUEST:
+    case ADMIN_PRODUCT_REQUEST:
+      return {
+        loading: true,
+        allProducts: [],
+      };
+    case ALL_RAW_PRODUCT_SUCCESS:
+      return {
+        loading: false,
+        allProducts: action.payload.products,
       };
 
     case ADMIN_PRODUCT_SUCCESS:
