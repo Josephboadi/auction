@@ -10,6 +10,9 @@ const {
   deleteReview,
   getAdminProducts,
   getAllRawProducts,
+  getAutoBidInfo,
+  autoBidding,
+  updateAutoBidInfo,
 } = require("../controllers/productController");
 const { isAuthenticatedSeller, authorizeRoles } = require("../middleware/auth");
 
@@ -17,6 +20,9 @@ const router = express.Router();
 
 router.route("/products").get(getAllProducts);
 router.route("/allproducts").get(getAllRawProducts);
+router.route("/autoInfo").get(getAutoBidInfo);
+router.route("/auto/activate").post(autoBidding);
+router.route("/auto/update").put(updateAutoBidInfo);
 
 router
   .route("/admin/products")

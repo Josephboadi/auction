@@ -1,4 +1,5 @@
 const Product = require("../models/productModel");
+const AutoBid = require("../models/autoBidModel");
 const Seller = require("../models/sellerModel");
 const ErrorHander = require("../utils/errorhander");
 const catchAsyncErrors = require("../middleware/catchAsyncErrors");
@@ -176,6 +177,51 @@ exports.updateProduct = catchAsyncErrors(async (req, res, next) => {
   res.status(200).json({
     success: true,
     product,
+  });
+});
+
+// activate autoBidding
+exports.autoBidding = catchAsyncErrors(async (req, res, next) => {
+  req.body.user;
+  req.body.autoBidAmount = 1000000;
+  // req.body.id
+
+  const autoBid = await AutoBid.create(req.body);
+  await Product.findById(req.body.id).then((fetchedProduct) => {
+    fetchedProduct.autoBid = true;
+
+    fetchedProduct.save();
+  });
+
+  res.status(200).json({
+    message: "Auto Bid Activated",
+    data: autoBid,
+  });
+});
+
+// Get autobid info
+exports.updateAutoBidInfo = catchAsyncErrors(async (req, res, next) => {
+  const autoBid = await AutoBid.findById(req.body.id)
+    .populate("user")
+    .then((fetchedAutobid) => {
+      fetchedAutobid.autoBidAmount = req.body.autoBidAmount;
+
+      fetchedAutobid.save();
+    });
+
+  res.status(200).json({
+    success: true,
+    autoBid,
+  });
+});
+
+// update autobid info
+exports.getAutoBidInfo = catchAsyncErrors(async (req, res, next) => {
+  let autobidinfo = await AutoBid.find().populate("user");
+
+  res.status(200).json({
+    success: true,
+    autobidinfo,
   });
 });
 

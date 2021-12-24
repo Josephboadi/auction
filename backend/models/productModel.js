@@ -50,7 +50,7 @@ const productSchema = mongoose.Schema({
   },
   autoBid: {
     type: Boolean,
-    default: true,
+    default: false,
   },
   reviews: [
     {

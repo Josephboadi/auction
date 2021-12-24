@@ -31,6 +31,24 @@ import {
   DELETE_REVIEW_REQUEST,
   DELETE_REVIEW_SUCCESS,
   DELETE_REVIEW_FAIL,
+  NEW_PRODUCT_BID_REQUEST,
+  NEW_PRODUCT_BID_SUCCESS,
+  NEW_PRODUCT_BID_RESET,
+  NEW_PRODUCT_BID_FAIL,
+  ACTIVATE_AUTO_BID_REQUEST,
+  ACTIVATE_AUTO_BID_SUCCESS,
+  ACTIVATE_AUTO_BID_RESET,
+  ACTIVATE_AUTO_BID_FAIL,
+  UPDATE_AUTO_BID_REQUEST,
+  UPDATE_AUTO_BID_SUCCESS,
+  UPDATE_AUTO_BID_RESET,
+  UPDATE_AUTO_BID_FAIL,
+  ALL_BID_REQUEST,
+  ALL_BID_SUCCESS,
+  ALL_BID_FAIL,
+  AUTO_BID_REQUEST,
+  AUTO_BID_SUCCESS,
+  AUTO_BID_FAIL,
   CLEAR_ERRORS,
 } from "../constants/productConstants";
 
@@ -50,6 +68,46 @@ export const getRawProduct = () => async (dispatch) => {
   } catch (error) {
     dispatch({
       type: ALL_RAW_PRODUCT_FAIL,
+      payload: error.response.data.message,
+    });
+  }
+};
+
+// Get All Bids
+export const getAllProductBids = (id) => async (dispatch) => {
+  try {
+    dispatch({ type: ALL_BID_REQUEST });
+
+    let link = `/api/v1/bids`;
+
+    const { data } = await axios.post(link, id);
+
+    dispatch({
+      type: ALL_BID_SUCCESS,
+      payload: data,
+    });
+  } catch (error) {
+    dispatch({
+      type: ALL_BID_FAIL,
+      payload: error.response.data.message,
+    });
+  }
+};
+
+// Get auto bid info
+export const getAutoBid = () => async (dispatch) => {
+  try {
+    dispatch({ type: AUTO_BID_REQUEST });
+
+    const { data } = await axios.get(`/api/v1/autoInfo`);
+
+    dispatch({
+      type: AUTO_BID_SUCCESS,
+      payload: data.autobidinfo,
+    });
+  } catch (error) {
+    dispatch({
+      type: AUTO_BID_FAIL,
       payload: error.response.data.message,
     });
   }
@@ -124,6 +182,79 @@ export const createProduct = (productData) => async (dispatch) => {
   } catch (error) {
     dispatch({
       type: NEW_PRODUCT_FAIL,
+      payload: error.response.data.message,
+    });
+  }
+};
+
+// Create Bid
+export const createBid = (bidData) => async (dispatch) => {
+  try {
+    dispatch({ type: NEW_PRODUCT_BID_REQUEST });
+
+    const config = {
+      headers: { "Content-Type": "application/json" },
+    };
+
+    const { data } = await axios.post(`/api/v1/bid/new`, bidData, config);
+
+    dispatch({
+      type: NEW_PRODUCT_BID_SUCCESS,
+      payload: data,
+    });
+  } catch (error) {
+    dispatch({
+      type: NEW_PRODUCT_BID_FAIL,
+      payload: error.response.data.message,
+    });
+  }
+};
+
+// activate Bid Bidding
+export const activateAuto = (autoData) => async (dispatch) => {
+  try {
+    dispatch({ type: ACTIVATE_AUTO_BID_REQUEST });
+
+    const config = {
+      headers: { "Content-Type": "application/json" },
+    };
+
+    const { data } = await axios.post(
+      `/api/v1/auto/activate`,
+      autoData,
+      config
+    );
+
+    dispatch({
+      type: ACTIVATE_AUTO_BID_SUCCESS,
+      payload: data,
+    });
+  } catch (error) {
+    dispatch({
+      type: ACTIVATE_AUTO_BID_FAIL,
+      payload: error.response.data.message,
+    });
+  }
+};
+
+// Update autoBid Amount
+export const updateAutoBidAmount = (autoData) => async (dispatch) => {
+  try {
+    dispatch({ type: UPDATE_AUTO_BID_REQUEST });
+
+    const config = {
+      headers: { "Content-Type": "application/json" },
+    };
+
+    const { data } = await axios.put(`/api/v1/auto/update`, autoData, config);
+
+    dispatch({
+      type: UPDATE_AUTO_BID_SUCCESS,
+      payload: data.success,
+    });
+  } catch (error) {
+    dispatch({
+      type: UPDATE_AUTO_BID_FAIL,
       payload: error.response.data.message,
     });
   }
