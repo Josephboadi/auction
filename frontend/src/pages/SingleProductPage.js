@@ -38,24 +38,9 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import Timer from "../components/Timer";
 import EditIcon from "@material-ui/icons/Edit";
-
-const bidData = [
-  {
-    customer: "Joseph",
-    pName: "Sumsung",
-    amount: 1000,
-  },
-  {
-    customer: "John",
-    pName: "Dell Laptop",
-    amount: 2000,
-  },
-  {
-    customer: "Richard",
-    pName: "Iphone",
-    amount: 1500,
-  },
-];
+import CloseIcon from "@material-ui/icons/Close";
+import Notification from "../components/Notification";
+import Loader1 from "../components/layout/Loader/Loader";
 
 const SingleProductPage = () => {
   const dispatch = useDispatch();
@@ -81,19 +66,25 @@ const SingleProductPage = () => {
 
   const [open, setOpen] = useState(false);
   const [rating, setRating] = useState(0);
-  const [bidAmount, setBidAmount] = useState(product?.currentBidPrice);
+  const [bidAmount, setBidAmount] = useState(0);
 
   const [comment, setComment] = useState("");
   const [bidData, setBidData] = useState([]);
-  const [timerDays, setTimerDays] = useState();
-  const [timerHours, setTimerHours] = useState();
-  const [timerMinutes, setTimerMinutes] = useState();
-  const [timerSeconds, setTimerSeconds] = useState();
+  const [timerDays, setTimerDays] = useState("");
+  const [timerHours, setTimerHours] = useState("");
+  const [timerMinutes, setTimerMinutes] = useState("");
+  const [timerSeconds, setTimerSeconds] = useState("");
+
+  const [notify, setNotify] = useState({
+    isOpen: false,
+    message: "",
+    type: "",
+  });
 
   let interval;
 
   const startTimer = () => {
-    const countDownDate = new Date(product.closeDate).getTime();
+    const countDownDate = new Date(product?.closeDate).getTime();
 
     interval = setInterval(() => {
       const now = new Date().getTime();
@@ -121,12 +112,6 @@ const SingleProductPage = () => {
   useEffect(() => {
     startTimer();
   }, []);
-  // const {
-  //   single_product_loading: loading,
-  //   single_product_error: error,
-  //   single_product: product,
-  //   fetchSingleProduct,
-  // } = useProductsContext()
 
   const submitReviewToggle = () => {
     open ? setOpen(false) : setOpen(true);
@@ -167,35 +152,55 @@ const SingleProductPage = () => {
 
   // console.log(bidAmount + 1);
   let autoamt = parseInt(bidAmount) + 1;
-  console.log(autoamt);
+  // console.log(autoamt);
 
   const submitBidHandler = () => {
-    const bidData = {
-      bidAmount: bidAmount,
-      bidType: "normal",
-      product: product?._id,
-      user: user?._id,
-    };
-
-    dispatch(createBid(bidData));
-
-    if (product.autoBid && isAuthenticated) {
+    if (isAuthenticated && product?.currentBidPrice < bidAmount) {
       const bidData = {
-        bidAmount: autoamt,
-        bidType: "Auto",
+        bidAmount: bidAmount,
+        bidType: "normal",
         product: product?._id,
-        user: autoBidInfo[0]?.user?._id,
+        user: user?._id,
       };
-      dispatch(createBid(bidData));
-    }
 
-    dispatch(getProductDetails(id));
-    // dispatch(getAllProductBids(id));
+      dispatch(createBid(bidData));
+
+      setNotify({
+        isOpen: true,
+        message: success,
+        type: "Bid Created Successfully",
+      });
+
+      if (product.autoBid) {
+        const bidData = {
+          bidAmount: autoamt,
+          bidType: "Auto",
+          product: product?._id,
+          user: autoBidInfo[0]?.user?._id,
+        };
+        dispatch(createBid(bidData));
+
+        setNotify({
+          isOpen: true,
+          message: success,
+          type: "Auto Bid Created Successfully",
+        });
+      }
+
+      dispatch(getProductDetails(id));
+      history.push(`/products/${id}`);
+    } else {
+      setNotify({
+        isOpen: true,
+        message: error,
+        type: "Sign in to bid if not. Otherwise, bit higher than the current highest bid",
+      });
+    }
   };
 
   useEffect(() => {
     setBidData(product);
-  }, [bidData, setBidData, product]);
+  }, [product]);
 
   useEffect(() => {
     if (error) {
@@ -203,11 +208,10 @@ const SingleProductPage = () => {
         history.push("/");
       }, 3000);
     }
-    // eslint-disable-next-line
   }, [error]);
 
   if (loading) {
-    return <Loading />;
+    return <Loader1 />;
   }
   if (error) {
     return <Error />;
@@ -227,13 +231,6 @@ const SingleProductPage = () => {
   const columns = [
     { field: "id", headerName: "ID", minWidth: 150, flex: 0.1 },
     { field: "customer", headerName: "Customer", minWidth: 180, flex: 0.2 },
-
-    {
-      field: "pname",
-      headerName: "Product",
-      minWidth: 150,
-      flex: 0.2,
-    },
     {
       field: "bid",
       headerName: "Bid",
@@ -241,30 +238,11 @@ const SingleProductPage = () => {
       minWidth: 150,
       flex: 0.2,
     },
-
     {
-      field: "actions",
-      flex: 0.1,
-      headerName: "Actions",
+      field: "pname",
+      headerName: "Product",
       minWidth: 150,
-      // type: "number",
-      sortable: false,
-      renderCell: (params) => {
-        return (
-          <Fragment>
-            <Link>
-              <EditIcon />
-            </Link>
-
-            {/* <Button
-              onClick={() =>
-                deleteProductHandler(params?.getValue(params?.id, 'id'))
-              }>
-              <DeleteIcon />
-            </Button> */}
-          </Fragment>
-        );
-      },
+      flex: 0.2,
     },
   ];
 
@@ -275,8 +253,8 @@ const SingleProductPage = () => {
       rows.push({
         id: item?._id,
         customer: item?.user.name,
-        pname: bidData.name,
         bid: item?.bidAmount,
+        pname: bidData.name,
       });
     });
 
@@ -312,12 +290,8 @@ const SingleProductPage = () => {
                   </h5>
                   <p className="desc"> {description}</p>
                   <p className="info">
-                    <span>Status : </span>
-                    {product.openDate <= new Date()
-                      ? "Bidding in Progress"
-                      : product.closeDate >= new Date()
-                      ? "Bidding Completed"
-                      : "Bidding Pending"}
+                    <span>Auto Enabled : </span>
+                    {product.autoBid ? "True" : "False"}
                   </p>
 
                   <Timer
@@ -326,6 +300,49 @@ const SingleProductPage = () => {
                     timerMinutes={timerMinutes}
                     timerSeconds={timerSeconds}
                   />
+                  {notify.isOpen && (
+                    <div
+                      style={{
+                        marginTop: 10,
+                        borderRadius: 15,
+                        border: "1px solid silver",
+                        background: "#fff",
+                        display: "flex",
+                        maxWidth: "100%",
+                        padding: 20,
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                    >
+                      {isAuthenticated &&
+                      product?.currentBidPrice < bidAmount ? (
+                        <h6 style={{ color: "green", fontWeight: "bold" }}>
+                          Bid Created Successfully
+                        </h6>
+                      ) : isAuthenticated &&
+                        product?.currentBidPrice < bidAmount &&
+                        product.autoBid ? (
+                        <h6 style={{ color: "green", fontWeight: "bold" }}>
+                          Bid Created Successfully
+                        </h6>
+                      ) : (
+                        <h6 style={{ color: "red", fontWeight: "bold" }}>
+                          Sign in to bid if not. Otherwise, bit higher than the
+                          current highest bid
+                        </h6>
+                      )}
+
+                      <CloseIcon
+                        style={{ marginLeft: 10 }}
+                        onClick={() =>
+                          setNotify({
+                            isOpen: false,
+                          })
+                        }
+                      />
+                    </div>
+                  )}
+
                   <div className="bidContainer">
                     <div className="amountText">
                       <p>Amount</p>
@@ -334,7 +351,7 @@ const SingleProductPage = () => {
                     <div className="bidInputContainer">
                       <input
                         type="number"
-                        value={bidAmount}
+                        value={bidAmount || product?.currentBidPrice}
                         onChange={(e) => setBidAmount(e.target.value)}
                         className="bidInput"
                       />
@@ -350,6 +367,46 @@ const SingleProductPage = () => {
                 <div className="customerBidInfo">
                   <div className="customerBidInfoTable">
                     <h3 style={{}}>Customers Bidding Infomation</h3>
+
+                    {/* <div className="productListTable">
+                      <div
+                        style={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                          width: "auto",
+                          paddingRight: 10,
+                          paddingLeft: 10,
+                        }}
+                      >
+                        <h4>Customer</h4>
+                        <h4>Bid</h4>
+                        <h4>Bid Type</h4>
+                      </div>
+                      {bidData?.bids ? (
+                        bidData?.bids?.map((item) => (
+                          <div
+                            style={{
+                              display: "flex",
+                              justifyContent: "space-between",
+                              alignItems: "center",
+                              width: "auto",
+                              padding: 10,
+                              paddingRight: 15,
+                              paddingLeft: 15,
+                            }}
+                          >
+                            <h5>{item?.user.name}</h5>
+                            <h5>{item?.bidAmount}</h5>
+                            <h5>{item?.bidType}</h5>
+                          </div>
+                        ))
+                      ) : (
+                        <div>
+                          <h5>No Bid placed</h5>
+                        </div>
+                      )}
+                    </div> */}
                     <DataGrid
                       rows={rows}
                       columns={columns}
@@ -407,8 +464,11 @@ const SingleProductPage = () => {
             <p className="noReviews">No Reviews Yet</p>
           )}
         </div>
+        <Notification notify={notify} setNotify={setNotify} />
       </Wrapper>
+
       <Footer />
+      <Notification notify={notify} setNotify={setNotify} />
     </>
   );
 };
@@ -419,6 +479,7 @@ const Wrapper = styled.main`
     gap: 4rem;
     margin-top: 2rem;
   }
+
   .price {
     color: var(--clr-primary-5);
   }

@@ -17,6 +17,11 @@ exports.createBid = catchAsyncErrors(async (req, res, next) => {
         success: true,
         bid,
       });
+    } else {
+      res.status(500).json({
+        success: false,
+        message: "Bid Amount shoud be higher than current Bid",
+      });
     }
   });
 });

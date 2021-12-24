@@ -63,19 +63,19 @@ function App() {
   const { isAuthenticated, user } = useSelector((state) => state.user);
   // const sellerAuth = useSelector((state) => state.seller);
 
-  const [stripeApiKey, setStripeApiKey] = useState("");
+  // const [stripeApiKey, setStripeApiKey] = useState("");
 
-  async function getStripeApiKey() {
-    const { data } = await axios.get("/api/v1/stripeapikey");
+  // async function getStripeApiKey() {
+  //   const { data } = await axios.get("/api/v1/stripeapikey");
 
-    setStripeApiKey(data.stripeApiKey);
-  }
+  //   setStripeApiKey(data.stripeApiKey);
+  // }
 
   useEffect(() => {
     store.dispatch(loadUser());
     store.dispatch(loadUser_seller());
 
-    getStripeApiKey();
+    // getStripeApiKey();
   }, []);
 
   // {
@@ -254,11 +254,11 @@ function App() {
             isAdmin={true}
             component={ProductReviews}
           />
-          {stripeApiKey && (
+          {/* {stripeApiKey && (
             <Elements stripe={loadStripe(stripeApiKey)}>
               <PrivateRoute exact path="/process/payment" component={Payment} />
             </Elements>
-          )}
+          )} */}
           <Route path="*">
             <Error />
           </Route>
