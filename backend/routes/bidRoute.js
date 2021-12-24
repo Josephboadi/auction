@@ -17,9 +17,7 @@ const router = express.Router();
 
 router.route("/allbids").get(getAllRawBids);
 
-router
-  .route("/bids")
-  .post(isAuthenticatedSeller || isAuthenticatedUser, getProductBids);
+router.route("/bids").post(getProductBids);
 
 router
   .route("/bid/new")

@@ -94,32 +94,158 @@ export const allProductsReducer = (state = { allProducts: [] }, action) => {
   }
 };
 
-export const allBidsReducer = (state = { allProducts: [] }, action) => {
+export const allBidsReducer = (state = { allProductBids: [] }, action) => {
   switch (action.type) {
-    case ALL_RAW_PRODUCT_REQUEST:
-    case ADMIN_PRODUCT_REQUEST:
+    case ALL_BID_REQUEST:
       return {
         loading: true,
-        allProducts: [],
+        allProductBids: [],
       };
-    case ALL_RAW_PRODUCT_SUCCESS:
+    case ALL_BID_SUCCESS:
       return {
         loading: false,
-        allProducts: action.payload.products,
+        allProductBids: action.payload.bids,
       };
 
-    case ADMIN_PRODUCT_SUCCESS:
-      return {
-        loading: false,
-        allProducts: action.payload,
-      };
-    case ALL_RAW_PRODUCT_FAIL:
-    case ADMIN_PRODUCT_FAIL:
+    case ALL_BID_FAIL:
       return {
         loading: false,
         error: action.payload,
       };
 
+    case CLEAR_ERRORS:
+      return {
+        ...state,
+        error: null,
+      };
+    default:
+      return state;
+  }
+};
+
+export const autoBidInfoReducer = (state = { autoBidInfo: [] }, action) => {
+  switch (action.type) {
+    case AUTO_BID_REQUEST:
+      return {
+        loading: true,
+        autoBidInfo: [],
+      };
+    case AUTO_BID_SUCCESS:
+      return {
+        loading: false,
+        autoBidInfo: action.payload,
+      };
+
+    case AUTO_BID_FAIL:
+      return {
+        loading: false,
+        error: action.payload,
+      };
+
+    case CLEAR_ERRORS:
+      return {
+        ...state,
+        error: null,
+      };
+    default:
+      return state;
+  }
+};
+
+export const createBidReducer = (state = { bid: {} }, action) => {
+  switch (action.type) {
+    case NEW_PRODUCT_BID_REQUEST:
+      return {
+        ...state,
+        loading: true,
+      };
+    case NEW_PRODUCT_BID_SUCCESS:
+      return {
+        loading: false,
+        success: action.payload.success,
+        bid: action.payload.bid,
+      };
+    case NEW_PRODUCT_BID_FAIL:
+      return {
+        ...state,
+        loading: false,
+        error: action.payload,
+      };
+    case NEW_PRODUCT_BID_RESET:
+      return {
+        ...state,
+        success: false,
+      };
+    case CLEAR_ERRORS:
+      return {
+        ...state,
+        error: null,
+      };
+    default:
+      return state;
+  }
+};
+
+export const activateAutoReducer = (state = { autoBid: {} }, action) => {
+  switch (action.type) {
+    case ACTIVATE_AUTO_BID_REQUEST:
+      return {
+        ...state,
+        loading: true,
+      };
+    case ACTIVATE_AUTO_BID_SUCCESS:
+      return {
+        loading: false,
+        success: action.payload.success,
+        autoBid: action.payload.autoBid,
+      };
+    case ACTIVATE_AUTO_BID_FAIL:
+      return {
+        ...state,
+        loading: false,
+        error: action.payload,
+      };
+    case ACTIVATE_AUTO_BID_RESET:
+      return {
+        ...state,
+        success: false,
+      };
+    case CLEAR_ERRORS:
+      return {
+        ...state,
+        error: null,
+      };
+    default:
+      return state;
+  }
+};
+
+export const updateAutoAmountReducer = (state = {}, action) => {
+  switch (action.type) {
+    case UPDATE_AUTO_BID_REQUEST:
+      return {
+        ...state,
+        loading: true,
+      };
+
+    case UPDATE_AUTO_BID_SUCCESS:
+      return {
+        ...state,
+        loading: false,
+        isUpdated: action.payload,
+      };
+    case UPDATE_AUTO_BID_FAIL:
+      return {
+        ...state,
+        loading: false,
+        error: action.payload,
+      };
+
+    case UPDATE_AUTO_BID_RESET:
+      return {
+        ...state,
+        isUpdated: false,
+      };
     case CLEAR_ERRORS:
       return {
         ...state,

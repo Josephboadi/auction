@@ -10,6 +10,11 @@ import {
   productReviewsReducer,
   productsReducer,
   reviewReducer,
+  allBidsReducer,
+  autoBidInfoReducer,
+  createBidReducer,
+  activateAutoReducer,
+  updateAutoAmountReducer,
 } from "./reducers/productReducer";
 
 import {
@@ -41,6 +46,11 @@ const reducer = combineReducers({
   allProducts: allProductsReducer,
   products: productsReducer,
   productDetails: productDetailsReducer,
+  allBids: allBidsReducer,
+  autoBid: autoBidInfoReducer,
+  newBid: createBidReducer,
+  activateAuto: activateAutoReducer,
+  updateAuto: updateAutoAmountReducer,
   user: userReducer,
   seller: userSellerReducer,
   profile: profileReducer,

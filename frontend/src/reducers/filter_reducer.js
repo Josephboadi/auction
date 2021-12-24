@@ -10,7 +10,7 @@ import {
 } from "../actions";
 
 const filter_reducer = (state, action) => {
-  console.log(action);
+  // console.log(action);
   if (action.type === LOAD_PRODUCTS) {
     let maxRate = 5;
     let minRate = 0;

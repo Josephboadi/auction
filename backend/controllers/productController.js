@@ -116,7 +116,12 @@ exports.getAdminProducts = catchAsyncErrors(async (req, res, next) => {
 exports.getProductDetails = catchAsyncErrors(async (req, res, next) => {
   const product = await Product.findById(req.params.id)
     .populate("bids")
-    .populate("user");
+    .populate("user")
+    .populate({
+      path: "bids",
+      model: "Bid",
+      populate: [{ path: "user", model: "User" }],
+    });
 
   if (!product) {
     return next(new ErrorHander("Product not found", 404));

@@ -17,7 +17,13 @@ import { Rating } from "@material-ui/lab";
 import "./ProductDetails.css";
 import styled from "styled-components";
 import { Link } from "react-router-dom";
-import { getProductDetails, newReview } from "../redux/actions/productAction";
+import {
+  createBid,
+  getAllProductBids,
+  getAutoBid,
+  getProductDetails,
+  newReview,
+} from "../redux/actions/productAction";
 import {
   Dialog,
   DialogActions,
@@ -59,6 +65,8 @@ const SingleProductPage = () => {
   const { success, error: reviewError } = useSelector(
     (state) => state.newReview
   );
+  const { isAuthenticated, user } = useSelector((state) => state.user);
+  const { autoBidInfo } = useSelector((state) => state.autoBid);
   const { id } = useParams();
   const history = useHistory();
 
@@ -69,12 +77,14 @@ const SingleProductPage = () => {
     precision: 0.5,
   };
 
-  console.log(product);
+  // console.log(product);
 
   const [open, setOpen] = useState(false);
   const [rating, setRating] = useState(0);
-  const [comment, setComment] = useState("");
+  const [bidAmount, setBidAmount] = useState(product?.currentBidPrice);
 
+  const [comment, setComment] = useState("");
+  const [bidData, setBidData] = useState([]);
   const [timerDays, setTimerDays] = useState();
   const [timerHours, setTimerHours] = useState();
   const [timerMinutes, setTimerMinutes] = useState();
@@ -83,10 +93,10 @@ const SingleProductPage = () => {
   let interval;
 
   const startTimer = () => {
-    const countDownDate = new Date(product?.closeDate).getTime();
+    const countDownDate = new Date(product.closeDate).getTime();
 
     interval = setInterval(() => {
-      const now = new Date(product?.openDate).getTime();
+      const now = new Date().getTime();
 
       const distance = countDownDate - now;
 
@@ -110,7 +120,7 @@ const SingleProductPage = () => {
 
   useEffect(() => {
     startTimer();
-  });
+  }, []);
   // const {
   //   single_product_loading: loading,
   //   single_product_error: error,
@@ -134,6 +144,8 @@ const SingleProductPage = () => {
     setOpen(false);
   };
 
+  // console.log(bidData);
+
   useEffect(() => {
     if (error) {
       // alert.error(error);
@@ -150,11 +162,40 @@ const SingleProductPage = () => {
       dispatch({ type: NEW_REVIEW_RESET });
     }
     dispatch(getProductDetails(id));
-    // fetchSingleProduct(`${url}${id}`)
-    // eslint-disable-next-line
-  }, [id, error, reviewError, success]);
+    dispatch(getAutoBid());
+  }, []);
 
-  // console.log(product);
+  // console.log(bidAmount + 1);
+  let autoamt = parseInt(bidAmount) + 1;
+  console.log(autoamt);
+
+  const submitBidHandler = () => {
+    const bidData = {
+      bidAmount: bidAmount,
+      bidType: "normal",
+      product: product?._id,
+      user: user?._id,
+    };
+
+    dispatch(createBid(bidData));
+
+    if (product.autoBid && isAuthenticated) {
+      const bidData = {
+        bidAmount: autoamt,
+        bidType: "Auto",
+        product: product?._id,
+        user: autoBidInfo[0]?.user?._id,
+      };
+      dispatch(createBid(bidData));
+    }
+
+    dispatch(getProductDetails(id));
+    // dispatch(getAllProductBids(id));
+  };
+
+  useEffect(() => {
+    setBidData(product);
+  }, [bidData, setBidData, product]);
 
   useEffect(() => {
     if (error) {
@@ -229,13 +270,13 @@ const SingleProductPage = () => {
 
   const rows = [];
 
-  bidData &&
-    bidData?.forEach((item) => {
+  bidData.bids &&
+    bidData?.bids?.forEach((item) => {
       rows.push({
-        id: item?.customer,
-        customer: item?.customer,
-        pname: item?.pName,
-        bid: item?.amount,
+        id: item?._id,
+        customer: item?.user.name,
+        pname: bidData.name,
+        bid: item?.bidAmount,
       });
     });
 
@@ -272,7 +313,7 @@ const SingleProductPage = () => {
                   <p className="desc"> {description}</p>
                   <p className="info">
                     <span>Status : </span>
-                    {product.openDate >= new Date()
+                    {product.openDate <= new Date()
                       ? "Bidding in Progress"
                       : product.closeDate >= new Date()
                       ? "Bidding Completed"
@@ -291,16 +332,16 @@ const SingleProductPage = () => {
                     </div>
 
                     <div className="bidInputContainer">
-                      <input type="number" className="bidInput" />
+                      <input
+                        type="number"
+                        value={bidAmount}
+                        onChange={(e) => setBidAmount(e.target.value)}
+                        className="bidInput"
+                      />
                     </div>
                     <div className="btn-container">
-                      <Link
-                        // to="/cart"
-                        className="btn"
-                        // onClick={() => addToCart(_id, amount, product)}>
-                        // onClick={addToCartHandler}
-                      >
-                        Bid
+                      <Link to="#" className="btn" onClick={submitBidHandler}>
+                        Submit Bid
                       </Link>
                     </div>
                   </div>

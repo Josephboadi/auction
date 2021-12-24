@@ -80,7 +80,7 @@ export const getAllProductBids = (id) => async (dispatch) => {
 
     let link = `/api/v1/bids`;
 
-    const { data } = await axios.post(link, id);
+    const { data } = await axios.post(`/api/v1/bids`, id);
 
     dispatch({
       type: ALL_BID_SUCCESS,

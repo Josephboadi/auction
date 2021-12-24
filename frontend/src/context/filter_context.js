@@ -46,7 +46,7 @@ export const FilterProvider = ({ children }) => {
     (state) => state.allProducts
   );
 
-  console.log(allProducts);
+  // console.log(allProducts);
   // console.log(products);
 
   useEffect(() => {
